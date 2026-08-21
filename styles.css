@@ -9,8 +9,6 @@
   --green-soft: #e9f7f3;
   --red: #b13d45;
   --red-soft: #fff0f1;
-  --amber: #9a6500;
-  --amber-soft: #fff4d8;
 }
 
 * { box-sizing: border-box; }
@@ -70,7 +68,6 @@ h3 span { color: #9aa4a1; }
 .suggestion--remove strong { color: var(--red); }
 .score { margin-left: auto; color: #68736f; font-size: .68rem; font-weight: 700; }
 .score::after { content: " 分"; }
-.pending { padding: 1px 6px; color: var(--amber); background: var(--amber-soft); border-radius: 99px; font-size: .65rem; font-weight: 700; }
 .suggestion p { margin: 2px 0 0; color: #5f6b68; font-size: .76rem; }
 .muted { color: #9aa4a1; font-size: .8rem; }
 
