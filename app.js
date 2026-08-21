@@ -20,14 +20,10 @@ document.querySelector("#summary").innerHTML = [
 document.querySelector("#generated-at").textContent = data.meta.generatedAt;
 
 function suggestionTemplate(item, type) {
-  const disabled = item.temporarilyDisabled
-    ? '<span class="pending">暂未启用</span>'
-    : "";
   return `
     <div class="suggestion suggestion--${type}">
       <div class="suggestion__line">
         <strong>${type === "add" ? "+" : "−"} ${escapeHtml(item.name)}</strong>
-        ${disabled}
         <span class="score">${item.confidence}</span>
       </div>
       <p>${escapeHtml(item.reason)}</p>

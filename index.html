@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <meta name="description" content="LusyChat 角色 Tag 首批 AI 审核页" />
-    <title>角色 Tag 审核 · 首批 50 条</title>
+    <meta name="description" content="LusyChat 角色 Tag 迁移后 AI 审核页" />
+    <title>角色 Tag 审核 · 迁移后 50 条</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -17,7 +17,7 @@
         <div>
           <p class="eyebrow">LUSYCHAT · AI 初筛</p>
           <h1>角色 Tag 审核</h1>
-          <p class="subtitle">首批 50 条 · 只展示建议，不写入正式库</p>
+          <p class="subtitle">迁移后首批 50 条 · 建议尚未写入角色</p>
         </div>
         <div class="summary" id="summary" aria-label="审核统计"></div>
       </div>
@@ -26,7 +26,7 @@
     <main>
       <section class="notice">
         <strong>筛选说明</strong>
-        <span>原 Tag 按正常逻辑只显示已启用项；新增候选额外包含暂未启用的「体型差」「禁忌关系」，命中时会单独标记。</span>
+        <span>按正式环境正常逻辑选取 Public、station=100、已启用角色；候选仅使用当前 120 个可见 Tag。</span>
       </section>
 
       <section class="toolbar" aria-label="筛选工具">
@@ -45,7 +45,7 @@
       <div id="empty" class="empty" hidden>没有符合条件的角色</div>
     </main>
 
-    <footer>AI 一次筛选 · 原角色信息使用繁体多语言内容 · <span id="generated-at"></span></footer>
+    <footer>AI 一次筛选 · 新增略宽松、删除严格 · 原角色信息使用繁体内容 · <span id="generated-at"></span></footer>
 
     <script src="data.js"></script>
     <script src="app.js"></script>
