@@ -50,6 +50,7 @@ input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rg
 .index, .rating { position: absolute; top: 10px; padding: 4px 8px; color: white; background: rgba(15,36,32,.78); border-radius: 7px; font-size: .7rem; font-weight: 700; backdrop-filter: blur(5px); }
 .index { left: 10px; }
 .rating { right: 10px; }
+.rating--unlisted { color: #2e2614; background: rgba(255,217,128,.9); }
 .card__content { min-width: 0; padding: 20px 22px 18px; }
 .card h2 { margin: 0 0 8px; font-size: 1.45rem; line-height: 1.3; }
 .original-copy { font-family: "Noto Sans TC", "Noto Sans SC", sans-serif; }
