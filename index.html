@@ -1,72 +1,51 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <meta name="description" content="LusyChat 角色卡補 Tag：首批 50 個角色 AI 初篩審核頁" />
-    <title>角色卡補 Tag · 首批審核</title>
+    <meta name="description" content="LusyChat 角色 Tag 首批 AI 审核页" />
+    <title>角色 Tag 审核 · 首批 50 条</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="hero">
-      <div class="hero__inner">
-        <div class="eyebrow">LUSYCHAT · AI 初篩審核</div>
-        <h1>角色卡補 Tag</h1>
-        <p class="hero__lead">首批 50 個角色。所有結果僅供人工審核，沒有寫入正式庫。</p>
-        <div class="guardrail">
-          <span class="guardrail__icon">✓</span>
-          <div><strong>只新增，不刪除</strong><span>Xiaoya 評論涉及的 Tag 與所有角色原 Tag 均完整保留。</span></div>
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div>
+          <p class="eyebrow">LUSYCHAT · AI 初筛</p>
+          <h1>角色 Tag 审核</h1>
+          <p class="subtitle">首批 50 条 · 只展示建议，不写入正式库</p>
         </div>
-        <div class="stats" id="stats" aria-label="審核摘要"></div>
+        <div class="summary" id="summary" aria-label="审核统计"></div>
       </div>
     </header>
 
-    <main class="layout">
-      <section class="scope" aria-labelledby="scope-title">
-        <div>
-          <p class="section-kicker">範圍與口徑</p>
-          <h2 id="scope-title">正式庫只讀抽樣</h2>
-        </div>
-        <div class="scope__copy">
-          <p><strong>納入：</strong>啟用、station=100、Public、有頭像、審核通過、非 SEO 專用角色。</p>
-          <p><strong>Tag 候選：</strong>137 個已啟用 Tag + 2 個新增但暫未啟用的 Tag；8 個歷史隱藏 Tag 不參與新增。</p>
-          <p><strong>流程：</strong>AI 初篩 → 嚴格二次復核 → 存在性、重複與置信度校驗。90 分以上為高置信，70–89 分仍需人工確認。</p>
-        </div>
+    <main>
+      <section class="notice">
+        <strong>筛选说明</strong>
+        <span>原 Tag 按正常逻辑只显示已启用项；新增候选额外包含暂未启用的「体型差」「禁忌关系」，命中时会单独标记。</span>
       </section>
 
-      <section class="toolbar" aria-label="篩選工具">
-        <label class="search">
-          <span>搜尋</span>
-          <input id="search" type="search" placeholder="角色名、原 Tag 或新增 Tag" autocomplete="off" />
-        </label>
-        <label>
-          <span>結果</span>
-          <select id="result-filter">
-            <option value="all">全部角色</option>
-            <option value="suggested">有新增建議</option>
-            <option value="high">含 90+ 高置信建議</option>
-            <option value="none">本輪無建議</option>
-          </select>
-        </label>
-        <label>
-          <span>新增 Tag</span>
-          <select id="tag-filter"><option value="all">全部新增 Tag</option></select>
-        </label>
-        <div class="toolbar__count" id="visible-count" aria-live="polite"></div>
+      <section class="toolbar" aria-label="筛选工具">
+        <input id="search" type="search" placeholder="搜索角色或 Tag" aria-label="搜索角色或 Tag" autocomplete="off" />
+        <select id="change-filter" aria-label="筛选建议类型">
+          <option value="all">全部角色</option>
+          <option value="changed">有调整建议</option>
+          <option value="add">有新增建议</option>
+          <option value="remove">有删除建议</option>
+          <option value="none">无调整建议</option>
+        </select>
+        <span id="visible-count" class="visible-count" aria-live="polite"></span>
       </section>
 
-      <section id="cards" class="cards" aria-label="角色審核清單"></section>
-      <div id="empty" class="empty" hidden>沒有符合目前篩選條件的角色。</div>
+      <section id="cards" class="cards" aria-label="角色审核列表"></section>
+      <div id="empty" class="empty" hidden>没有符合条件的角色</div>
     </main>
 
-    <footer>
-      <p>角色卡補 Tag · 首批 AI 初篩 · <span id="generated-at"></span></p>
-      <p>本頁不提供修改操作；審核決策請另行記錄後再統一入庫。</p>
-    </footer>
+    <footer>AI 一次筛选 · 原角色信息使用繁体多语言内容 · <span id="generated-at"></span></footer>
 
     <script src="data.js"></script>
     <script src="app.js"></script>

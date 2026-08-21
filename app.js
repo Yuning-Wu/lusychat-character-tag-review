@@ -1,8 +1,7 @@
 const data = window.REVIEW_DATA;
 const cardsRoot = document.querySelector("#cards");
 const searchInput = document.querySelector("#search");
-const resultFilter = document.querySelector("#result-filter");
-const tagFilter = document.querySelector("#tag-filter");
+const changeFilter = document.querySelector("#change-filter");
 const visibleCount = document.querySelector("#visible-count");
 const emptyState = document.querySelector("#empty");
 
@@ -13,62 +12,70 @@ const escapeHtml = (value = "") => String(value)
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
 
-const statItems = [
-  [data.meta.sampleCount, "抽樣角色"],
-  [data.meta.suggestionCount, "新增建議"],
-  [data.meta.highConfidenceCount, "90+ 高置信"],
-  [data.meta.noSuggestionCount, "本輪無建議"],
-];
-document.querySelector("#stats").innerHTML = statItems.map(([value, label]) => `
-  <div class="stat"><strong>${value}</strong><span>${label}</span></div>
-`).join("");
-document.querySelector("#generated-at").textContent = `產生於 ${data.meta.generatedAt}（上海時間）`;
+document.querySelector("#summary").innerHTML = [
+  [data.meta.sampleCount, "角色"],
+  [data.meta.additionCount, "建议新增"],
+  [data.meta.removalCount, "建议删除"],
+].map(([value, label]) => `<div><strong>${value}</strong><span>${label}</span></div>`).join("");
+document.querySelector("#generated-at").textContent = data.meta.generatedAt;
 
-const allAddedTags = [...new Set(data.characters.flatMap((item) => item.suggestions.map((tag) => tag.name)))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
-tagFilter.insertAdjacentHTML("beforeend", allAddedTags.map((tag) => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join(""));
+function suggestionTemplate(item, type) {
+  const disabled = item.temporarilyDisabled
+    ? '<span class="pending">暂未启用</span>'
+    : "";
+  return `
+    <div class="suggestion suggestion--${type}">
+      <div class="suggestion__line">
+        <strong>${type === "add" ? "+" : "−"} ${escapeHtml(item.name)}</strong>
+        ${disabled}
+        <span class="score">${item.confidence}</span>
+      </div>
+      <p>${escapeHtml(item.reason)}</p>
+    </div>
+  `;
+}
 
 function cardTemplate(character) {
-  const suggestions = character.suggestions.length
-    ? character.suggestions.map((tag) => `
-        <div class="suggestion ${tag.confidence >= 90 ? "suggestion--high" : ""}">
-          <div class="suggestion__top">
-            <span class="suggestion__name">＋ ${escapeHtml(tag.name)}</span>
-            <span class="confidence">${tag.confidence}</span>
-            ${tag.temporarilyDisabled ? '<span class="disabled-badge">暫未啟用</span>' : ""}
-          </div>
-          <p>${escapeHtml(tag.reason)}</p>
-        </div>
-      `).join("")
-    : '<div class="no-suggestion">本輪沒有足夠明確的新增 Tag</div>';
-
+  const additions = character.additions.length
+    ? character.additions.map((item) => suggestionTemplate(item, "add")).join("")
+    : '<span class="muted">无</span>';
+  const removals = character.removals.length
+    ? character.removals.map((item) => suggestionTemplate(item, "remove")).join("")
+    : '<span class="muted">无</span>';
   const originalTags = character.originalTags.length
     ? character.originalTags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")
-    : '<em>尚無原 Tag</em>';
+    : '<em>无已启用 Tag</em>';
 
   return `
-    <article class="card" data-index="${character.index}">
-      <div class="portrait-wrap">
-        <img class="portrait" src="${escapeHtml(character.image)}" alt="${escapeHtml(character.name)} 的角色圖片" loading="lazy" referrerpolicy="no-referrer" />
-        <span class="sequence">${String(character.index).padStart(2, "0")}</span>
-        <span class="rating ${character.nsfw ? "rating--nsfw" : ""}">${character.nsfw ? "成人向" : "安全向"}</span>
+    <article class="card">
+      <div class="image-wrap">
+        <img src="${escapeHtml(character.image)}" alt="${escapeHtml(character.name)} 的角色图片" loading="lazy" referrerpolicy="no-referrer" />
+        <span class="index">${String(character.index).padStart(2, "0")}</span>
+        <span class="rating">${character.nsfw ? "成人向" : "安全向"}</span>
       </div>
-      <div class="card__body">
+      <div class="card__content">
         <h2>${escapeHtml(character.name)}</h2>
-        <section class="content-block">
-          <h3>簡介</h3>
-          <p class="copy">${escapeHtml(character.intro)}</p>
-        </section>
-        <section class="added-block">
-          <div class="added-block__title"><h3>本次建議新增</h3><span>${character.suggestions.length} 個</span></div>
-          <div class="suggestions">${suggestions}</div>
-        </section>
-        <section class="original-block">
-          <h3>原有 Tag <span>${character.originalTags.length}</span></h3>
-          <div class="original-tags">${originalTags}</div>
-        </section>
+        <p class="intro original-copy">${escapeHtml(character.intro)}</p>
+
+        <div class="changes">
+          <section>
+            <h3>建议新增 <span>${character.additions.length}</span></h3>
+            <div class="suggestion-list">${additions}</div>
+          </section>
+          <section>
+            <h3>建议删除 <span>${character.removals.length}</span></h3>
+            <div class="suggestion-list">${removals}</div>
+          </section>
+        </div>
+
+        <div class="original-tags">
+          <h3>当前已启用 Tag</h3>
+          <div>${originalTags}</div>
+        </div>
+
         <details>
-          <summary>查看開場白</summary>
-          <p class="copy greeting">${escapeHtml(character.greeting)}</p>
+          <summary>查看开场白</summary>
+          <p class="greeting original-copy">${escapeHtml(character.greeting)}</p>
         </details>
       </div>
     </article>
@@ -76,22 +83,30 @@ function cardTemplate(character) {
 }
 
 function matches(character) {
-  const query = searchInput.value.trim().toLocaleLowerCase("zh-Hant");
-  const haystack = [character.name, ...character.originalTags, ...character.suggestions.map((tag) => tag.name)].join(" ").toLocaleLowerCase("zh-Hant");
+  const query = searchInput.value.trim().toLocaleLowerCase("zh-CN");
+  const haystack = [
+    character.name,
+    ...character.originalTags,
+    ...character.additions.map((item) => item.name),
+    ...character.removals.map((item) => item.name),
+  ].join(" ").toLocaleLowerCase("zh-CN");
   if (query && !haystack.includes(query)) return false;
-  if (tagFilter.value !== "all" && !character.suggestions.some((tag) => tag.name === tagFilter.value)) return false;
-  if (resultFilter.value === "suggested" && !character.suggestions.length) return false;
-  if (resultFilter.value === "high" && !character.suggestions.some((tag) => tag.confidence >= 90)) return false;
-  if (resultFilter.value === "none" && character.suggestions.length) return false;
+
+  const hasAdd = character.additions.length > 0;
+  const hasRemove = character.removals.length > 0;
+  if (changeFilter.value === "changed" && !hasAdd && !hasRemove) return false;
+  if (changeFilter.value === "add" && !hasAdd) return false;
+  if (changeFilter.value === "remove" && !hasRemove) return false;
+  if (changeFilter.value === "none" && (hasAdd || hasRemove)) return false;
   return true;
 }
 
 function render() {
   const visible = data.characters.filter(matches);
   cardsRoot.innerHTML = visible.map(cardTemplate).join("");
-  visibleCount.textContent = `顯示 ${visible.length} / ${data.characters.length}`;
+  visibleCount.textContent = `${visible.length} / ${data.characters.length}`;
   emptyState.hidden = visible.length > 0;
 }
 
-[searchInput, resultFilter, tagFilter].forEach((control) => control.addEventListener("input", render));
+[searchInput, changeFilter].forEach((control) => control.addEventListener("input", render));
 render();
