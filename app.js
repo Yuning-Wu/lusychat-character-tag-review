@@ -4,6 +4,9 @@ const searchInput = document.querySelector("#search");
 const changeFilter = document.querySelector("#change-filter");
 const visibleCount = document.querySelector("#visible-count");
 const emptyState = document.querySelector("#empty");
+const pagination = document.querySelector("#pagination");
+const pageSize = data.meta.pageSize || 50;
+let currentPage = 1;
 
 const escapeHtml = (value = "") => String(value)
   .replaceAll("&", "&amp;")
@@ -99,10 +102,33 @@ function matches(character) {
 
 function render() {
   const visible = data.characters.filter(matches);
-  cardsRoot.innerHTML = visible.map(cardTemplate).join("");
-  visibleCount.textContent = `${visible.length} / ${data.characters.length}`;
+  const totalPages = Math.max(1, Math.ceil(visible.length / pageSize));
+  currentPage = Math.min(currentPage, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const pageCharacters = visible.slice(start, start + pageSize);
+
+  cardsRoot.innerHTML = pageCharacters.map(cardTemplate).join("");
+  visibleCount.textContent = `第 ${currentPage}/${totalPages} 页 · 筛中 ${visible.length}`;
   emptyState.hidden = visible.length > 0;
+  pagination.hidden = visible.length === 0 || totalPages === 1;
+  pagination.innerHTML = `
+    <button type="button" data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>上一页</button>
+    ${Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `
+      <button type="button" data-page="${page}" ${page === currentPage ? 'aria-current="page"' : ""}>${page}</button>
+    `).join("")}
+    <button type="button" data-page="${currentPage + 1}" ${currentPage === totalPages ? "disabled" : ""}>下一页</button>
+  `;
 }
 
-[searchInput, changeFilter].forEach((control) => control.addEventListener("input", render));
+[searchInput, changeFilter].forEach((control) => control.addEventListener("input", () => {
+  currentPage = 1;
+  render();
+}));
+pagination.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-page]");
+  if (!button || button.disabled) return;
+  currentPage = Number(button.dataset.page);
+  render();
+  cardsRoot.scrollIntoView({ behavior: "smooth", block: "start" });
+});
 render();
