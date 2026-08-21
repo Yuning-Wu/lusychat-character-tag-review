@@ -50,7 +50,7 @@ function cardTemplate(character) {
       <div class="image-wrap">
         <img src="${escapeHtml(character.image)}" alt="${escapeHtml(character.name)} 的角色图片" loading="lazy" referrerpolicy="no-referrer" />
         <span class="index">${String(character.index).padStart(2, "0")}</span>
-        <span class="rating">${character.nsfw ? "成人向" : "安全向"}</span>
+        <span class="rating ${character.visibility === "Unlisted" ? "rating--unlisted" : ""}">${escapeHtml(character.visibility)} · ${character.nsfw ? "成人向" : "安全向"}</span>
       </div>
       <div class="card__content">
         <h2>${escapeHtml(character.name)}</h2>
@@ -85,6 +85,7 @@ function matches(character) {
   const query = searchInput.value.trim().toLocaleLowerCase("zh-CN");
   const haystack = [
     character.name,
+    character.visibility,
     ...character.originalTags,
     ...character.additions.map((item) => item.name),
     ...character.removals.map((item) => item.name),
